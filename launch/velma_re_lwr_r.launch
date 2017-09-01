@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="LOG_LEVEL" default="Info"/>
+  <arg name="debug" default="false"/>
+  <arg name="cset" default="true"/>
+
+  <arg unless="$(arg cset)"  name="CSET_LAUNCH_PREFIX" value=""/>
+  <arg     if="$(arg cset)"  name="CSET_LAUNCH_PREFIX" value="cset proc -s user -e --"/>
+
+  <arg unless="$(arg debug)" name="LAUNCH_PREFIX" value=""/>
+  <arg     if="$(arg debug)" name="LAUNCH_PREFIX" value="gdb -ex run --args "/>
+
+  <node
+    launch-prefix="$(arg CSET_LAUNCH_PREFIX) $(arg LAUNCH_PREFIX)"
+    name="velma_lwr_r"
+    pkg="subsystem_deployer" type="deployer"
+    args="-l $(arg LOG_LEVEL) -x $(find velma_core_re_lwr)/config/velma_core_re_lwr_r.xml -m velma_core_re_lwr -p 10 -c 1 --" output="screen">
+<!--    <env name="LD_PRELOAD" value="librtt_malloc_hook.so" />-->
+  </node>
+
+  <group ns="velma_lwr_r">
+    <rosparam>
+      lwr:
+        fri_port: 49948
+        joint_offset: [0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+    </rosparam>
+  </group>
+</launch>

@@ -1,0 +1,41 @@
+<subsystem_configuration>
+    <import package="controller_common" />
+    <import package="rtt_geometry_msgs" />
+    <import package="rtt_velma_core_cs_ve_body_msgs" />
+    <import package="rtt_velma_core_cs_ve_body_subsystem_buffers" />
+    <import package="eigen_typekit" />
+    <import package="rtt_std_msgs" />
+    <import package="port_operations" />
+    <import package="rtt_control_msgs" />
+    <import package="velma_controller" />
+    <import package="rtt_std_msgs" />
+    <import package="rtt_tf" />
+    <import package="lwr_fri" />
+    <import package="rtt_lwr_msgs" />
+    <import package="velma_common_components" />
+
+    <component name="lwr" type="FRIComponent" running="true" />
+    <component name="cmd_sync" type="velma_core_re_lwr_types::LwrCommandSync" running="true" />
+
+    <io_buffer alias="lwr_st" name="lLwr_st" />
+    <io_buffer alias="lwr_cmd" name="lLwr_cmd" />
+<!--
+    <ros_stream port="lwr_stConcate.msg_OUTPORT"           topic="/velma_core_re_lwr_l/lwr_st" />
+    <ros_stream port="master_component.lwr_cmd_OUTPORT"    topic="/velma_core_re_lwr_l/lwr_cmd" />
+-->
+
+    <connection from="lwr_cmdSplit.t_OUTPORT"       to="cmd_sync.t_INPORT" />
+    <connection from="lwr_cmdSplit.krlCmd_OUTPORT"  to="cmd_sync.KRL_CMD_INPORT" />
+    <connection from="cmd_sync.t_OUTPORT"           to="lwr.JointTorqueCommand_INPORT" />
+    <connection from="cmd_sync.KRL_CMD_OUTPORT"     to="lwr.KRL_CMD_INPORT" />
+
+    <connection from="lwr.JointPosition_OUTPORT"    to="lwr_stConcate.q_INPORT" name="q" />
+    <connection from="lwr.JointVelocity_OUTPORT"    to="lwr_stConcate.dq_INPORT" name="dq" />
+    <connection from="lwr.JointTorque_OUTPORT"      to="lwr_stConcate.t_INPORT" name="t" />
+    <connection from="lwr.GravityTorque_OUTPORT"    to="lwr_stConcate.gt_INPORT" name="gt" />
+    <connection from="lwr.CartesianWrench_OUTPORT"  to="lwr_stConcate.w_INPORT" name="wr" />
+    <connection from="lwr.MassMatrix_OUTPORT"       to="lwr_stConcate.mmx_INPORT" name="M" />
+    <connection from="lwr.FRIState_OUTPORT"         to="lwr_stConcate.iState_INPORT" name="intSt" />
+    <connection from="lwr.RobotState_OUTPORT"       to="lwr_stConcate.rState_INPORT" name="robSt" />
+
+</subsystem_configuration>
