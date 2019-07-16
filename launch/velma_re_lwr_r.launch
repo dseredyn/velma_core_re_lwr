@@ -2,7 +2,7 @@
 <launch>
   <arg name="LOG_LEVEL" default="Info"/>
   <arg name="debug" default="false"/>
-  <arg name="cset" default="true"/>
+  <arg name="cset" default="false"/>
 
   <arg unless="$(arg cset)"  name="CSET_LAUNCH_PREFIX" value=""/>
   <arg     if="$(arg cset)"  name="CSET_LAUNCH_PREFIX" value="cset proc -s user -e --"/>
@@ -14,7 +14,7 @@
     launch-prefix="$(arg CSET_LAUNCH_PREFIX) $(arg LAUNCH_PREFIX)"
     name="velma_lwr_r"
     pkg="subsystem_deployer" type="deployer"
-    args="-l $(arg LOG_LEVEL) -x $(find velma_core_re_lwr)/config/velma_core_re_lwr_r.xml -m velma_core_re_lwr -p 10 -c 1 --" output="screen">
+    args="-l $(arg LOG_LEVEL) -x $(find velma_core_re_lwr)/config/velma_core_re_lwr_r.xml -m velma_core_re_lwr -p 10 -c 2 --" output="screen">
 <!--    <env name="LD_PRELOAD" value="librtt_malloc_hook.so" />-->
   </node>
 
