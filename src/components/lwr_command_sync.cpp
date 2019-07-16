@@ -57,13 +57,17 @@ private:
     std_msgs::Int32 KRL_CMD_;
 
     bool valid_t_prev_;
+    bool valid_t_prev_2_;
     bool valid_KRL_CMD_prev_;
+    bool valid_KRL_CMD_prev_2_;
 };
 
 LwrCommandSync::LwrCommandSync(const std::string &name)
     : TaskContext(name)
     , valid_t_prev_(false)
+    , valid_t_prev_2_(false)
     , valid_KRL_CMD_prev_(false)
+    , valid_KRL_CMD_prev_2_(false)
 {
     this->ports()->addPort("t_INPORT", port_t_in_);
     this->ports()->addPort("KRL_CMD_INPORT", port_KRL_CMD_in_);
@@ -80,15 +84,17 @@ void LwrCommandSync::updateHook() {
     bool valid_t = (port_t_in_.read(t_) == RTT::NewData);
     bool valid_KRL_CMD = (port_KRL_CMD_in_.read(KRL_CMD_) == RTT::NewData);
 
-    if (valid_t || valid_t_prev_) {
+    if (valid_t || valid_t_prev_ || valid_t_prev_2_) {
         port_t_out_.write(t_);
     }
 
-    if (valid_KRL_CMD || valid_KRL_CMD_prev_) {
+    if (valid_KRL_CMD || valid_KRL_CMD_prev_ || valid_KRL_CMD_prev_2_) {
         port_KRL_CMD_out_.write(KRL_CMD_);
     }
 
+    valid_t_prev_2_ = valid_t_prev_;
     valid_t_prev_ = valid_t;
+    valid_KRL_CMD_prev_2_ = valid_KRL_CMD_prev_;
     valid_KRL_CMD_prev_ = valid_KRL_CMD;
 }
 
