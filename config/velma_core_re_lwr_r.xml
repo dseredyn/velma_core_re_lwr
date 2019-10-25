@@ -25,6 +25,8 @@
 -->
     <ros_stream port="master_component.lwr_cmd_OUTPORT"    topic="/velma_core_re_lwr_r/lwr_cmd" />
 
+    <ros_stream port="lwr.dbg_cmd_INPORT"    topic="/velma_core_re_lwr_r/dbg_cmd" />
+
     <connection from="lwr_cmdSplit.t_OUTPORT"       to="cmd_sync.t_INPORT" />
     <connection from="lwr_cmdSplit.krlCmd_OUTPORT"  to="cmd_sync.KRL_CMD_INPORT" />
     <connection from="cmd_sync.t_OUTPORT"           to="lwr.JointTorqueCommand_INPORT" />
