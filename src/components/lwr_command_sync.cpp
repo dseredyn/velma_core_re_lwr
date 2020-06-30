@@ -30,6 +30,8 @@
 #include <rtt/Logger.hpp>
 
 #include <std_msgs/Int32.h>
+#include <lwr_msgs/FriRobotState.h>
+#include <lwr_msgs/FriIntfState.h>
 
 using namespace RTT;
 
@@ -49,6 +51,7 @@ private:
     // ports
     RTT::InputPort<Joints > port_t_in_;
     RTT::InputPort<std_msgs::Int32 > port_KRL_CMD_in_;
+    RTT::InputPort<lwr_msgs::FriIntfState > port_FRIState_in_;
 
     RTT::OutputPort<Joints > port_t_out_;
     RTT::OutputPort<std_msgs::Int32 > port_KRL_CMD_out_;
@@ -71,6 +74,7 @@ LwrCommandSync::LwrCommandSync(const std::string &name)
 {
     this->ports()->addPort("t_INPORT", port_t_in_);
     this->ports()->addPort("KRL_CMD_INPORT", port_KRL_CMD_in_);
+    this->ports()->addPort("FRIState_INPORT", port_FRIState_in_);
 
     this->ports()->addPort("t_OUTPORT", port_t_out_);
     this->ports()->addPort("KRL_CMD_OUTPORT", port_KRL_CMD_out_);
@@ -83,13 +87,29 @@ bool LwrCommandSync::startHook() {
 void LwrCommandSync::updateHook() {
     bool valid_t = (port_t_in_.read(t_) == RTT::NewData);
     bool valid_KRL_CMD = (port_KRL_CMD_in_.read(KRL_CMD_) == RTT::NewData);
+    
+    lwr_msgs::FriIntfState fs;
+    port_FRIState_in_.read(fs);
 
     if (valid_t || valid_t_prev_ || valid_t_prev_2_) {
+        // There is a new command data, so send it to LWR component
         port_t_out_.write(t_);
-    }
 
-    if (valid_KRL_CMD || valid_KRL_CMD_prev_ || valid_KRL_CMD_prev_2_) {
-        port_KRL_CMD_out_.write(KRL_CMD_);
+        if (valid_KRL_CMD || valid_KRL_CMD_prev_ || valid_KRL_CMD_prev_2_) {
+            port_KRL_CMD_out_.write(KRL_CMD_);
+        }
+    }
+    else {
+        // There is no new command data, so swith the LWR to monitor mode
+        if (fs.state == lwr_msgs::FriIntfState::FRI_STATE_CMD) {
+            std_msgs::Int32 krl_cmd;
+            krl_cmd.data = lwr_msgs::FriIntfState::FRI_STATE_MON;
+            port_KRL_CMD_out_.write(krl_cmd);
+        }
+        for (int i = 0; i < 7; ++i) {
+            t_[i] = 0.0;
+        }
+        port_t_out_.write(t_);
     }
 
     valid_t_prev_2_ = valid_t_prev_;
@@ -101,4 +121,3 @@ void LwrCommandSync::updateHook() {
 }   // velma_core_re_lwr_types
 
 ORO_LIST_COMPONENT_TYPE(velma_core_re_lwr_types::LwrCommandSync)
-
