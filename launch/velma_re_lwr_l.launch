@@ -14,7 +14,7 @@
     launch-prefix="$(arg CSET_LAUNCH_PREFIX) $(arg LAUNCH_PREFIX)"
     name="velma_lwr_l"
     pkg="subsystem_deployer" type="deployer"
-    args="-l $(arg LOG_LEVEL) -x $(find velma_core_re_lwr)/config/velma_core_re_lwr_l.xml -m velma_core_re_lwr -p 20 -c 2 --" output="screen">
+    args="-l $(arg LOG_LEVEL) -x $(find velma_core_re_lwr)/config/velma_core_re_lwr_l.xml -m velma_core_re_lwr -n velma_core_re_lwr_l -p 20 -c 2 --" output="screen">
 <!--    <env name="LD_PRELOAD" value="librtt_malloc_hook.so" />-->
   </node>
 
